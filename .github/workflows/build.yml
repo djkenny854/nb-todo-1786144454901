@@ -102,41 +102,8 @@ jobs:
 
       - name: Install Capacitor plugins
         run: |
-          echo "=== Installing 4 Capacitor plugin(s) ==="
+          echo "=== Installing 2 Capacitor plugin(s) ==="
           : > plugin-install-report.txt
-          echo ">>> @capacitor/app"
-          if npm install "@capacitor/app" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
-            echo "OK @capacitor/app" >> plugin-install-report.txt
-          else
-            echo "Retrying @capacitor/app..."; sleep 2;
-            if npm install "@capacitor/app" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
-              echo "OK @capacitor/app" >> plugin-install-report.txt
-            else
-              echo "FAIL @capacitor/app" >> plugin-install-report.txt
-            fi
-          fi
-          echo ">>> @capacitor/preferences"
-          if npm install "@capacitor/preferences" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
-            echo "OK @capacitor/preferences" >> plugin-install-report.txt
-          else
-            echo "Retrying @capacitor/preferences..."; sleep 2;
-            if npm install "@capacitor/preferences" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
-              echo "OK @capacitor/preferences" >> plugin-install-report.txt
-            else
-              echo "FAIL @capacitor/preferences" >> plugin-install-report.txt
-            fi
-          fi
-          echo ">>> @capacitor/splash-screen"
-          if npm install "@capacitor/splash-screen" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
-            echo "OK @capacitor/splash-screen" >> plugin-install-report.txt
-          else
-            echo "Retrying @capacitor/splash-screen..."; sleep 2;
-            if npm install "@capacitor/splash-screen" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
-              echo "OK @capacitor/splash-screen" >> plugin-install-report.txt
-            else
-              echo "FAIL @capacitor/splash-screen" >> plugin-install-report.txt
-            fi
-          fi
           echo ">>> @capacitor/status-bar"
           if npm install "@capacitor/status-bar" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
             echo "OK @capacitor/status-bar" >> plugin-install-report.txt
@@ -148,14 +115,23 @@ jobs:
               echo "FAIL @capacitor/status-bar" >> plugin-install-report.txt
             fi
           fi
+          echo ">>> @capacitor/app"
+          if npm install "@capacitor/app" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
+            echo "OK @capacitor/app" >> plugin-install-report.txt
+          else
+            echo "Retrying @capacitor/app..."; sleep 2;
+            if npm install "@capacitor/app" --legacy-peer-deps --save 2>&1 | tee -a plugin-install.log; then
+              echo "OK @capacitor/app" >> plugin-install-report.txt
+            else
+              echo "FAIL @capacitor/app" >> plugin-install-report.txt
+            fi
+          fi
           echo "=== Plugin install report ==="
           cat plugin-install-report.txt
           # Verify each plugin actually landed in package.json — fail loudly otherwise
           MISSING=""
-          node -e "const p=require('./package.json');const d={...(p.dependencies||{}),...(p.devDependencies||{})};process.exit(d['@capacitor/app']?0:1)" || MISSING="$MISSING @capacitor/app"
-          node -e "const p=require('./package.json');const d={...(p.dependencies||{}),...(p.devDependencies||{})};process.exit(d['@capacitor/preferences']?0:1)" || MISSING="$MISSING @capacitor/preferences"
-          node -e "const p=require('./package.json');const d={...(p.dependencies||{}),...(p.devDependencies||{})};process.exit(d['@capacitor/splash-screen']?0:1)" || MISSING="$MISSING @capacitor/splash-screen"
           node -e "const p=require('./package.json');const d={...(p.dependencies||{}),...(p.devDependencies||{})};process.exit(d['@capacitor/status-bar']?0:1)" || MISSING="$MISSING @capacitor/status-bar"
+          node -e "const p=require('./package.json');const d={...(p.dependencies||{}),...(p.devDependencies||{})};process.exit(d['@capacitor/app']?0:1)" || MISSING="$MISSING @capacitor/app"
           if [ -n "$MISSING" ]; then echo "::error::Plugins missing from package.json after install:$MISSING"; echo "MISSING_FROM_PKG:$MISSING" >> plugin-install-report.txt; exit 1; fi
           npx cap sync android || echo 'cap sync warning (non-fatal in Phase 1)'
           echo "=== Plugins synced ==="
@@ -216,4 +192,4 @@ jobs:
           name: phase1-source
           path: phase1-source.zip
           retention-days: 1
-# build-nonce: 8705dc20-70b3-499c-be21-1fae69a5e38d
+# build-nonce: 5618fa8e-660f-42c5-bffc-3a571f4edaf5
